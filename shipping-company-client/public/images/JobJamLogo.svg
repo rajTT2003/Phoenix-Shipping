@@ -1,0 +1,23 @@
+<svg width="390" height="390" viewBox="0 0 390 390" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g filter="url(#filter0_df_0_1)">
+<circle cx="195" cy="195" r="160" fill="#050505"/>
+</g>
+<circle cx="195" cy="195" r="150" fill="#FFD700"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M195 345V195H45C45 277.843 112.157 345 195 345Z" fill="#008000"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M196.211 44L195 193.995L344.995 195.206C345.664 112.366 279.051 44.669 196.211 44Z" fill="#008000"/>
+<circle cx="195" cy="195" r="100" fill="black"/>
+<path d="M205.318 122.545H244.239V222.261C244.191 231.731 241.8 240.064 237.065 247.261C232.378 254.411 225.891 259.998 217.605 264.023C209.366 268 199.873 269.989 189.125 269.989C179.797 269.989 171.275 268.379 163.557 265.159C155.839 261.892 149.684 256.778 145.091 249.818C140.498 242.811 138.225 233.72 138.273 222.545H177.761C177.903 226.191 178.519 229.269 179.608 231.778C180.744 234.288 182.307 236.182 184.295 237.46C186.331 238.691 188.794 239.307 191.682 239.307C194.617 239.307 197.08 238.668 199.068 237.389C201.104 236.111 202.643 234.217 203.685 231.707C204.726 229.151 205.271 226.002 205.318 222.261V122.545Z" fill="white"/>
+<defs>
+<filter id="filter0_df_0_1" x="0" y="0" width="390" height="390" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feOffset dx="-7" dy="-3"/>
+<feGaussianBlur stdDeviation="2"/>
+<feComposite in2="hardAlpha" operator="out"/>
+<feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"/>
+<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_0_1"/>
+<feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_0_1" result="shape"/>
+<feGaussianBlur stdDeviation="17.5" result="effect2_foregroundBlur_0_1"/>
+</filter>
+</defs>
+</svg>
