@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../../context/authContext"; // Import your Auth context
 import PackageTable from "./PackageTable";
-
+import config from "../../../../config"
 export default function TrackingPage() {
   const { user, loading: authLoading } = useAuth(); // Get user from AuthContext
   const [searchQuery, setSearchQuery] = useState("");
