@@ -9,6 +9,7 @@
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
+  "proxy": "https://your-backend-url.onrender.com",
   "dependencies": {
     "@react-google-maps/api": "^2.20.6",
     "axios": "^1.7.2",
