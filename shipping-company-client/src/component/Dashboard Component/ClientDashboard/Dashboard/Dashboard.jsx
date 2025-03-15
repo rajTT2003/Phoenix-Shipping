@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import StatCard from "./StatCard";
 import PackageTable from "./PackageTable";
 import { useAuth } from "../../../../context/authContext"; // Using auth context
-
+import config from "../../../../config"
 const Dashboard = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [stats, setStats] = useState(null);

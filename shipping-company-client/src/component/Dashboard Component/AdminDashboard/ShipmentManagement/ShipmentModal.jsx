@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import config from "../../../../config"
 
 const STATUS_OPTIONS = [
   "At Warehouse",
@@ -65,7 +66,7 @@ export default function ShipmentModal({ isOpen, onClose, editMode, initialData, 
     }
   
     try {
-      const response = await fetch("http://localhost:5000/api/calculate-cost", {
+      const response = await fetch(`${config.API_BASE_URL}/api/calculate-cost`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ weight: shipmentData.weight, unit: shipmentData.unit }),
@@ -98,8 +99,8 @@ export default function ShipmentModal({ isOpen, onClose, editMode, initialData, 
   
     const method = editMode ? "PUT" : "POST";
     const url = editMode
-      ? `http://localhost:5000/admin/shipments/${shipmentData._id}`
-      : `http://localhost:5000/admin/shipments`;
+      ? `${config.API_BASE_URL}/admin/shipments/${shipmentData._id}`
+      : `${config.API_BASE_URL}/admin/shipments`;
   
     try {
       const response = await fetch(url, {

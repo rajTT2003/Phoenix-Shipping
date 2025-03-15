@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import ShipmentTable from "./ShipmentTable";
 import ShipmentModal from "./ShipmentModal";
 import AddShipmentButton from "./AddShipmentButton";
-
+import config from "../../../../config"
 export default function ShipmentManagement() {
   const [shipments, setShipments] = useState([]);
   const [clients, setClients] = useState([]);
@@ -27,7 +27,7 @@ const filteredShipments = shipments.filter((shipment) =>
 );
 
   useEffect(() => {
-    fetch("http://localhost:5000/admin/users", {
+    fetch(`${config.API_BASE_URL}/admin/users`, {
       headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
     })
       .then((res) => res.json())
@@ -37,7 +37,7 @@ const filteredShipments = shipments.filter((shipment) =>
   }, []);
 
   useEffect(() => {
-    fetch("http://localhost:5000/admin/shipments")
+    fetch(`${config.API_BASE_URL}/admin/shipments`)
       .then((res) => res.json())
       .then((data) => setShipments(data))
       .catch(() => setError("Failed to fetch shipments"))
@@ -65,7 +65,7 @@ const filteredShipments = shipments.filter((shipment) =>
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this shipment?")) {
       try {
-        const response = await fetch(`http://localhost:5000/admin/shipments/${id}`, {
+        const response = await fetch(`${config.API_BASE_URL}/admin/shipments/${id}`, {
           method: "DELETE",
           headers: {
             "Authorization": `Bearer ${localStorage.getItem("token")}`,
