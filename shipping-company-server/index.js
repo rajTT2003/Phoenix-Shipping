@@ -10,6 +10,16 @@ const port = process.env.PORT || 2000;
 const admin = require('firebase-admin');
 const app = express();
 
+
+const path = require('path');
+
+// Serve static files from the React app
+app.use(express.static(path.join(__dirname, 'build')));
+
+// Catch-all route for any other paths (React Router will take over)
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'build', 'index.html'));
+});
 // Middleware
 app.use(express.json());
 app.use(cors());
@@ -23,6 +33,10 @@ const client = new MongoClient(uri, {
     deprecationErrors: true,
   }
 });    
+console.log("DB_USER:", process.env.DB_USER);
+console.log("DB_PASSWORD:", process.env.DB_PASSWORD);
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '1';
+
 
 async function run() {   
   try {
