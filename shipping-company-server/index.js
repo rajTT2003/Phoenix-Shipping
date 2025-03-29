@@ -471,7 +471,6 @@ app.post("/admin/send-subscription-notifications", async (req, res) => {
 
 
 
-
 app.post("/admin/shipments", async (req, res) => {
   try {
     const newShipment = req.body;
@@ -497,7 +496,7 @@ app.post("/admin/shipments", async (req, res) => {
       return res.status(400).json({ error: "Invalid unit for weight" });
     }
 
-    newShipment.cost = unitRates[newShipment.unit] * newShipment.weight;
+    newShipment.cost = parseFloat((unitRates[newShipment.unit] * newShipment.weight).toFixed(2));
 
     // Set status to "Pending"
     newShipment.state = "Pending";
@@ -550,7 +549,8 @@ app.put("/admin/shipments/:id", async (req, res) => {
     } else {
       return res.status(400).json({ error: "Invalid unit for weight" });
     }
-    updatedShipmentData.cost = cost;
+
+    updatedShipmentData.cost = parseFloat(cost.toFixed(2));
 
     // Set the status to "Pending" after update
     updatedShipmentData.state = "Pending";
@@ -1310,13 +1310,163 @@ app.get('/api/stats', verifyToken, async (req, res) => {
 
 
 
+// Get user by email endpoint
+app.get('/admin/users/email/:email', async (req, res) => {
+  const { email } = req.params;
+
+  try {
+    const user = await usersCollection.findOne({ email: { $regex: new RegExp(`^${email}$`, "i") } });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.json(user);
+  } catch (error) {
+    console.error("Error fetching user by email:", error);
+    res.status(500).json({ error: "Failed to fetch user by email" });
+  }
+});
+
+// Delete user by ID
+app.delete('/admin/users/:id', async (req, res) => {
+  const { id } = req.params;
+  
+  if (!ObjectId.isValid(id)) {
+    return res.status(400).json({ message: "Invalid user ID format" });
+  }
+
+  try {
+    const user = await usersCollection.findOne({ _id: new ObjectId(id) });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Try fetching Firebase UID before deleting
+    let firebaseUid = null;
+    try {
+      const userRecord = await admin.auth().getUserByEmail(user.email);
+      firebaseUid = userRecord.uid;
+    } catch (error) {
+      console.warn("User not found in Firebase:", error.message);
+    }
+
+    // If Firebase UID exists, delete from Firebase
+    if (firebaseUid) {
+      try {
+        await admin.auth().deleteUser(firebaseUid);
+      } catch (error) {
+        console.error("Error deleting user from Firebase:", error.message);
+      }
+    }
+
+    // Delete the user from MongoDB
+    const result = await usersCollection.deleteOne({ _id: new ObjectId(id) });
+
+    if (result.deletedCount === 0) {
+      return res.status(404).json({ message: "User not found in database" });
+    }
+
+    res.json({ message: "User account deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting user:", error);
+    res.status(500).json({ message: "Error deleting user account", error: error.message });
+  }
+});
 
 
+// POST request for creating a new user
+app.post('/admin/users', async (req, res) => {
+  try {
+    const userData = req.body;
+
+    // Generate clientId (you can use a more complex generation strategy if needed)
+    const clientId = `PXS-${(Math.random() * 10000).toFixed(0)}`;
+
+    // Create the full address string
+    const fullAddress = `${userData.addressLine1}, ${userData.addressLine2}, ${userData.town}, ${userData.parish}`.trim();
+
+    // Ensure the user structure follows the format you specified
+    const userToInsert = {
+      clientId,
+      email: userData.email,
+      password: userData.password ? await bcrypt.hash(userData.password, 10) : undefined,
+      firstName: userData.firstName,
+      lastName: userData.lastName,
+      phone: userData.phone,
+      isPhoneVerified: false,
+      isEmailVerified: true,
+      companyName: userData.companyName,
+      address: userData.address, //think its userData.fullAddress
+      servicePreferences: ``,
+      shippingAddress: ``,
+      role: userData.role,
+      
+    };
+
+    // Insert the new user into MongoDB
+    const result = await usersCollection.insertOne(userToInsert);
+    const newUser = await usersCollection.findOne({ _id: result.insertedId });
+
+    res.json(newUser);
+  } catch (error) {
+    console.error("Error creating user:", error);
+    res.status(500).json({ error: "Failed to create user" });
+  }
+});
 
 
- 
- 
- 
+// UPDATE user endpoint
+app.put('/admin/users/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updateData = req.body;
+
+    if (!ObjectId.isValid(id)) {
+      return res.status(400).json({ error: "Invalid user ID" });
+    }
+
+    // Handle password hashing
+    if (updateData.password?.trim()) {
+      updateData.password = await bcrypt.hash(updateData.password, 10);
+    } else {
+      delete updateData.password;
+    }
+
+    // Combine the address fields into a single address field
+    if (updateData.addressLine1 || updateData.addressLine2 || updateData.town || updateData.parish) {
+      updateData.address = `${updateData.addressLine1 || ''} ${updateData.addressLine2 || ''}, ${updateData.town || ''}, ${updateData.parish || ''}`.trim();
+    }
+
+    // Ensure isEmailVerified and isPhoneVerified are always stored
+    updateData.isEmailVerified = true;
+    updateData.isPhoneVerified = false;
+
+    // Remove unnecessary address fields
+    delete updateData.addressLine1;
+    delete updateData.addressLine2;
+    delete updateData.town;
+    delete updateData.parish;
+
+    const { _id, ...updateFields } = updateData;
+
+    const result = await usersCollection.updateOne(
+      { _id: new ObjectId(id) },
+      { $set: updateFields }
+    );
+
+    if (result.modifiedCount === 0) {
+      return res.status(404).json({ error: "User not found or no changes made" });
+    }
+
+    const updatedUser = await usersCollection.findOne({ _id: new ObjectId(id) });
+    res.json(updatedUser);
+  } catch (error) {
+    console.error("Error updating user:", error);
+    res.status(500).json({ error: "Failed to update user" });
+  }
+});
 
 
 // GET all users (Admin Only)
@@ -1328,7 +1478,9 @@ app.get('/admin/users', async (req, res) => {
     console.error("Error fetching users:", error);
     res.status(500).json({ error: "Failed to fetch users" });
   }
-}); 
+});
+
+
 
 // GET a single user by ID
 app.get('/admin/users/:id', async (req, res) => {
@@ -1347,45 +1499,8 @@ app.get('/admin/users/:id', async (req, res) => {
   }
 });
 
-// UPDATE a user
-app.put('/admin/users/:id', async (req, res) => {
-  try {
-    const { id } = req.params;
-    const updateData = req.body;
 
-    const updatedUser = await usersCollection.findOneAndUpdate(
-      { _id: new ObjectId(id) },
-      { $set: updateData },
-      { returnDocument: "after" }
-    );
 
-    if (!updatedUser.value) {
-      return res.status(404).json({ error: "User not found" });
-    }
-
-    res.json(updatedUser.value);
-  } catch (error) {
-    console.error("Error updating user:", error);
-    res.status(500).json({ error: "Failed to update user" });
-  }
-});
-
-// DELETE a user
-app.delete('/admin/users/:id', async (req, res) => {
-  try {
-    const { id } = req.params;
-    const result = await usersCollection.deleteOne({ _id: new ObjectId(id) });
-
-    if (result.deletedCount === 0) {
-      return res.status(404).json({ error: "User not found" });
-    }
-
-    res.json({ message: "User deleted successfully" });
-  } catch (error) {
-    console.error("Error deleting user:", error);
-    res.status(500).json({ error: "Failed to delete user" });
-  }
-});
 
 
 // 🔹 Subscribe to Newsletter

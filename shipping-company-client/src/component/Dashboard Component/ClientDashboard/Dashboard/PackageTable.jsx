@@ -106,8 +106,8 @@ const PackageTable = ({ clientId }) => {
               <tr key={index} className="border-b">
                 <td className="p-3">{pkg.packageId}</td>
                 <td className="p-3">
-                  <span className={`px-2 py-1 rounded text-sm font-semibold ${getStatusColor(latestStatus)}`}>
-                    {latestStatus}
+                  <span className={`px-2 py-1 rounded text-sm font-semibold ${getStatusColor(pkg.status?.length > 0 ? pkg.status[pkg.status.length - 1].status : "Unknown")}`}>
+                  {pkg.status?.length > 0 ? pkg.status[pkg.status.length - 1].status : "Unknown"}
                   </span>
                 </td>
                 <td className="p-3">{pkg.weight}{pkg.unit}</td>

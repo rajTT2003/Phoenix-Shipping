@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import config from "../../../config"
+import Loader from "../../Loader"
 export default function AdminSignIn() {
   const [step, setStep] = useState(1); // Step 1: Login | Step 2: OTP
   const [email, setEmail] = useState("");
@@ -10,7 +11,7 @@ export default function AdminSignIn() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-
+  
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -95,7 +96,7 @@ export default function AdminSignIn() {
               className="w-full bg-orange/100 text-white py-2 rounded-lg hover:bg-orange/90 disabled:opacity-50"
               disabled={loading}
             >
-              {loading ? "Signing In..." : "Sign In"}
+              {loading ? <div><Loader size={25}  color={"white"}/></div> : "Sign In"}
             </button>
           </form>
         ) : (
@@ -116,7 +117,7 @@ export default function AdminSignIn() {
               className="w-full bg-green/100 text-white py-2 rounded-lg hover:bg-green/90 disabled:opacity-50"
               disabled={loading}
             >
-              {loading ? "Verifying..." : "Verify OTP"}
+              {loading ? <div><Loader size={25}  color={"white"}/></div> : "Verify OTP"}
             </button>
           </form>
         )}

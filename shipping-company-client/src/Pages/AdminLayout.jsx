@@ -14,7 +14,7 @@ export default function AdminLayout() {
   return (
     <div className="flex h-screen">
       {/* Sidebar - Desktop & Mobile */}
-      <aside className={`w-64 bg-gray-900 text-white p-4 fixed h-full flex flex-col justify-between transition-all duration-300 md:relative z-50 ${isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}>
+      <aside className={`w-64 bg-gray-900 text-white p-4 fixed h-full flex flex-col justify-between transition-all duration-300 md:relative z-10 ${isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}>
         <div>
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-lg font-bold">Admin Panel</h2>
@@ -30,8 +30,8 @@ export default function AdminLayout() {
               <li><Link to="/admin/shipments" className="block p-2 hover:bg-gray-700 rounded">Shipments</Link></li>
               <li><Link to="/admin/users" className="block p-2 hover:bg-gray-700 rounded">Users</Link></li>
               <li><Link to="/admin/notifications" className="block p-2 hover:bg-gray-700 rounded">Notifications</Link></li>
-              <li><Link to="/admin/logs" className="block p-2 hover:bg-gray-700 rounded">Admin Logs</Link></li>
-            </ul>
+              {/*<li><Link to="/admin/logs" className="block p-2 hover:bg-gray-700 rounded">Admin Logs</Link></li> */}
+          </ul>
           </nav>
         </div>
 

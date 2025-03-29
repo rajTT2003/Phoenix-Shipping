@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../../context/authContext"; // Import your Auth context
 import PackageTable from "./PackageTable";
 import config from "../../../../config"
+import Loader from "../../../Loader"
 export default function TrackingPage() {
   const { user, loading: authLoading } = useAuth(); // Get user from AuthContext
   const [searchQuery, setSearchQuery] = useState("");
@@ -87,7 +88,7 @@ export default function TrackingPage() {
       />
 
       {loading ? (
-        <p className="text-gray-500 mt-4">Loading packages...</p>
+       <div><Loader size={40}  color={"orange"}/></div>
       ) : error ? (
         <p className="text-red-500 mt-4">{error}</p>
       ) : (

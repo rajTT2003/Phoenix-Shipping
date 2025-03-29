@@ -5,6 +5,7 @@ import StatCard from "./StatCard";
 import PackageTable from "./PackageTable";
 import { useAuth } from "../../../../context/authContext"; // Using auth context
 import config from "../../../../config"
+import Loader from "../../../Loader"
 const Dashboard = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [stats, setStats] = useState(null);
@@ -89,7 +90,7 @@ const Dashboard = () => {
 
       {/* Client Information */}
       {loading ? (
-        <p className="text-center text-gray-500">Loading client data...</p>
+        <p className="text-center text-gray-500"><div><Loader size={30}  color={"orange"}/></div></p>
       ) : user ? (
         <motion.div
           className="bg-gray-900 text-white p-6 rounded-2xl shadow-lg"
@@ -126,7 +127,7 @@ const Dashboard = () => {
 
       {/* Package Statistics */}
       {loading ? (
-        <p className="text-center text-gray-500">Loading stats...</p>
+        <p className="text-center text-gray-500"><div><Loader size={30}  color={"orange"}/></div></p>
       ) : stats ? (
         <motion.div
           className="grid grid-cols-1 md:grid-cols-4 gap-4"

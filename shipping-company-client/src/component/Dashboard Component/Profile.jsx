@@ -3,6 +3,9 @@ import { User, Edit, Lock, X, Trash2 } from "lucide-react";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import config from "../../config"
+import Loader from "../Loader"
+import { NavLink, useNavigate } from "react-router-dom";
+import { useAuth } from '../../context/authContext'; 
 
 export default function Profile() {
   const [user, setUser] = useState(null);
@@ -13,6 +16,8 @@ export default function Profile() {
   const [selectedParish, setSelectedParish] = useState("");
   const [selectedTown, setSelectedTown] = useState("");
   const [towns, setTowns] = useState([]);
+  const navigate = useNavigate();
+  const { logout } = useAuth();
   const [parishes] = useState([
     { name: 'Kingston', towns: ['Kingston', 'New Kingston', 'Half Way Tree', 'Papine', 'Cross Roads'] },
     { name: 'St. Andrew', towns: ['Constant Spring', 'Stony Hill', 'Red Hills', 'Mona', 'Havendale'] },
@@ -101,12 +106,11 @@ setUser((prevUser) => ({
   
       // Prepare the updated user data
       const updatedData = {
-        [field]: tempValue,
-        address: fullAddress,  // Send the combined address string
-        companyName: user.companyName,  // Send other necessary data
-        servicePreferences: user.servicePreferences,
+        [field]: tempValue,  
+        address: fullAddress,
+        companyName: field === "companyName" ? tempValue : user.companyName,
+        servicePreferences: field === "servicePreferences" ? tempValue : user.servicePreferences,
       };
-  
       console.log("Sending data to backend: ", updatedData); // Log the data to check
   
       const response = await fetch(`${config.API_BASE_URL}/api/user-info`, {
@@ -156,9 +160,9 @@ setUser((prevUser) => ({
         throw new Error("Failed to delete profile");
       }
 
-      alert("Profile deleted successfully");
-      setUser(null);
-      localStorage.removeItem("token");
+      //alert("Profile deleted successfully");
+      await logout();
+      navigate('/');
     } catch (error) {
       console.error("Error deleting profile:", error);
     }
@@ -177,7 +181,7 @@ setUser((prevUser) => ({
   };
 
   if (!user) {
-    return <div>Loading...</div>;
+    return <div><Loader size={40}  color={"orange"}/></div>;
   }
 
 

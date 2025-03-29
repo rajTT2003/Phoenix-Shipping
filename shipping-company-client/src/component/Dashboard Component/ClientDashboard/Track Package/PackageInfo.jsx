@@ -5,7 +5,7 @@ import TrackingTimeline from "./TrackingTimeline";
 import Map from "../../Map"; // Import the Map component
 import { Package } from "lucide-react"; // Package icon
 import config from "../../../../config"
-
+import Loader from "../../../Loader"
 export default function PackageDetails() {
   const [packageData, setPackageData] = useState(null);
   const { trackingNumber } = useParams();
@@ -26,7 +26,7 @@ export default function PackageDetails() {
     }
   }, [trackingNumber]);
 
-  if (!packageData) return <div className="text-center p-6">Loading package details...</div>;
+  if (!packageData) return <div><Loader size={40}  color={"orange"}/></div>;
 
   return (
     <div className="mt-8 w-full max-w-6xl bg-white border border-gray-300 rounded-lg shadow-md p-6 md:pb-6 pb-20 flex flex-col relative">

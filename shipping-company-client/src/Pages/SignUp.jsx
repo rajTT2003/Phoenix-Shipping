@@ -10,7 +10,7 @@ import logo from '/images/loginLogo.png';
 import { ArrowLeft } from 'lucide-react';
 import { useAuth } from '../context/authContext'; // Adjust the path if needed
 import config from "../config"
-
+import Loader from "../component/Loader"
 
 
 
@@ -35,7 +35,7 @@ const SignUp = () => {
     const [emailVerificationSent, setEmailVerificationSent] = useState(false);
     const [resendEmailTimer, setResendEmailTimer] = useState(60);
     const [canResendEmail, setCanResendEmail] = useState(false);
-
+    const [isLoading, setLoading] = useState(false);
 
     const [phoneVerified, setPhoneVerified] = useState(false);
     const [resendTimer, setResendTimer] = useState(60);
@@ -87,13 +87,14 @@ const SignUp = () => {
 
     const handleEmailSignup = async (e) => {
         e.preventDefault();
-    
+       
         if (!isEmailVerified) {
             toast.error("Please verify your email before signing up.");
             return;
         }
     
         try {
+             setLoading(true);
             const checkResponse = await axios.get(`${config.API_BASE_URL}/api/check-email?email=${email}`);
             if (checkResponse.data.exists) {
                 toast.info("Email is already in use!");
@@ -109,6 +110,8 @@ const SignUp = () => {
         } catch (error) {
             console.error("Signup Error:", error);
             toast.error(error.message || "Signup failed");
+        }finally{
+          setLoading(false);
         }
     };
     
@@ -317,7 +320,7 @@ const SignUp = () => {
                 </button>
               )}
             </div>
-            {isEmailVerified && <span className="text-green-600">✔ Email Verified</span>}
+            {isEmailVerified && <span className="text-green">✔ Email Verified</span>}
       
             <input
               type="password"
@@ -395,16 +398,17 @@ const SignUp = () => {
                 checked={termsAccepted}
                 onChange={(e) => setTermsAccepted(e.target.checked)}
               />
-              <span className="text-sm">I accept the Terms & Conditions</span>
+              <span className="text-sm">Double checked information provided</span>
             </div>
       
             
           </div>
           <button
-              className="bg-orange/100 w-full py-3 text-white rounded mt-6"
+              className="bg-orange/100 w-full py-3 text-white rounded mt-6  disabled:opacity-50"
               onClick={handleEmailSignup}
+              disabled={isLoading}
             >
-              Sign Up
+              {isLoading ? <Loader  size={25}  color={"white"} /> : "Sign Up"}
             </button>
       
           {isEmailVerificationModalOpen && (

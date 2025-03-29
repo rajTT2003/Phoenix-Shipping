@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import config from '../../../config'
-
+import Loader from "../../Loader"
 export default function ShippingAddress() {
   const [address, setAddress] = useState({
     addressLine1: "",
@@ -65,7 +65,7 @@ export default function ShippingAddress() {
         <input type="text" name="country" placeholder="Country" value={address.country} onChange={handleChange} className="p-2 border rounded" required />
 
         <button type="submit" className="bg-orange/100 text-white p-2 rounded w-full" disabled={loading}>
-          {loading ? "Saving..." : "Save Address"}
+          {loading ? <div><Loader size={25}  color={"white"}/></div>: "Save Address"}
         </button>
       </form>
     </div>

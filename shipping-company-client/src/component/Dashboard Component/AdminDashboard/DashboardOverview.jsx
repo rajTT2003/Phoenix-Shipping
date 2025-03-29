@@ -5,6 +5,7 @@ import "chart.js/auto"; // For Chart.js compatibility
 import ShippingAddress from "./ShippingAddress";
 import RateSetter from "./RateSetter"; 
 import config from '../../../config'
+import Loader from "../../Loader"
 export default function DashboardOverview() {
   const [shipments, setShipments] = useState(0);
   const [users, setUsers] = useState(0);
@@ -32,7 +33,7 @@ export default function DashboardOverview() {
 
   // Chart Data
   const chartData = {
-    labels: ["Shipments", "Users", "Notifications", "Logs"],
+    labels: ["Shipments", "Users", "Notifications"],
     datasets: [
       {
         label: "Dashboard Stats",
@@ -48,7 +49,7 @@ export default function DashboardOverview() {
       <h1 className="text-3xl font-bold mb-6">Admin Dashboard</h1>
 
       {loading ? (
-        <p>Loading data...</p>
+        <div><Loader size={40}  color={"orange"}/></div>
       ) : error ? (
         <p className="text-red-500">{error}</p>
       ) : (
@@ -59,7 +60,7 @@ export default function DashboardOverview() {
             <StatCard icon={<FaShippingFast />} color="blue" title="Total Shipments" count={shipments} />
             <StatCard icon={<FaUsers />} color="green" title="Total Users" count={users} />
             <StatCard icon={<FaBell />} color="yellow" title="Notifications" count={notifications} />
-            <StatCard icon={<FaClipboardList />} color="red" title="Admin Logs" count={logs} />
+            {/* <StatCard icon={<FaClipboardList />} color="red" title="Admin Logs" count={logs} /> */}
           </div>
 
           {/* Chart Section */}

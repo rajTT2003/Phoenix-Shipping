@@ -10,7 +10,7 @@ import logo from '/images/loginLogo.png';
 import { ArrowLeft } from 'lucide-react';
 import { useAuth } from '../context/authContext';
 import config from "../config"
-
+import Loader from "./Loader"
 const Login = () => {
     const auth = getAuth(app);
     const googleProvider = new GoogleAuthProvider();
@@ -18,7 +18,8 @@ const Login = () => {
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
     const { login, googleLogin, user, loading } = useAuth(); // Destructure `user`, `login`, `googleLogin`, and `loading`
-
+ 
+    const [isLoading, setLoading] = useState(false);
     // Handle Google login
     const handleGoogleLogin = async () => {
         try {
@@ -43,36 +44,37 @@ const Login = () => {
     // Handle Email login
     const handleEmailLogin = async () => {
         try {
-            // Firebase email login
+            setLoading(true); // Set loading before request starts
+    
             const userCredential = await signInWithEmailAndPassword(auth, email, password);
             const firebaseUser = userCredential.user;
-
-            // Send email and password to backend for token and user data
+    
             const response = await axios.post(`${config.API_BASE_URL}/api/auth/login`, {
                 email,
                 password,
             });
-
+    
             if (response.status === 200) {
                 const { token, user } = response.data;
-
-                // Store token and user data in localStorage
+    
                 localStorage.setItem("token", token);
                 localStorage.setItem("user", JSON.stringify(user));
-
-                // Update global auth context with user data
+    
                 await login(email, password);
-
+    
                 toast.success("Login successful!");
-                navigate("/client/dashboard"); // Redirect to client dashboard after successful login
+                navigate("/client/dashboard");
             } else {
                 toast.error(response.data.error || "Login failed");
             }
         } catch (error) {
             console.error("Login Error:", error);
             toast.error(error.response?.data?.error || error.message || "Login failed");
+        } finally {
+            setLoading(false); // Ensure loading is set to false after request completes
         }
     };
+    
 
     // Log user state for debugging
     useEffect(() => {
@@ -81,7 +83,7 @@ const Login = () => {
 
     // If loading, show a loading spinner or similar
     if (loading) {
-        return <div>Loading...</div>;
+        return <div><Loader size={40}  color={"orange"}/></div>;
     }
 
     return (
@@ -114,20 +116,25 @@ const Login = () => {
                         placeholder='Password'
                         className='w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-orange'
                     />
-                    <button className='bg-orange w-full py-2 text-white rounded' onClick={handleEmailLogin}>Login</button>
+                   <button className="bg-orange w-full py-2 text-white rounded disabled:opacity-50" 
+                   disabled={isLoading}
+                   onClick={handleEmailLogin}>
+                    {isLoading ? <Loader  size={25}  color={"white"} /> : "Login"}
+                    </button>
+
                 </div>
 
                 <div className='mt-4 text-center'>
                     <Link to="/reset-password" className='text-orange underline'>Forgot Password?</Link>
                 </div>
 
-                <div className="hidden flex items-center justify-center my-4">
+                <div className="hidden  items-center justify-center my-4">
                     <div className="flex-grow border-t border-gray-300"></div>
                     <span className="mx-4 text-gray-500">OR</span>
                     <div className="flex-grow border-t border-gray-300"></div>
                 </div>
 
-                <button className='hidden flex items-center justify-center w-full py-2 text-black mb-4 rounded border border-gray-300' onClick={handleGoogleLogin}>
+                <button className='hidden  items-center justify-center w-full py-2 text-black mb-4 rounded border border-gray-300' onClick={handleGoogleLogin}>
                     <svg xmlns="http://www.w3.org/2000/svg" height="35px" viewBox="0 0 24 24" width="35px">
                         <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
                         <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
